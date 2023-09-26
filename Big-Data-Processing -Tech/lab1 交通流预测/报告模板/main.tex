@@ -1,0 +1,423 @@
+\documentclass[4pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumerate}
+\usepackage[fontset=ubuntu]{ctex}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+\usepackage{pythonhighlight}
+\usepackage{natbib}
+\bibliographystyle{unsrt}
+\geometry{a4paper,scale=0.9}
+
+\title{交通流预测实验报告-禁止抄袭-后果自负}
+\author{21025105 张泽西}
+\date{}
+
+\begin{document}
+\vspace{-10cm}
+\maketitle
+
+\section{交通流预测问题描述}
+
+随着城市化的快速发展，交通拥堵问题日益严重，给人们的出行和城市的可持续发展带来了很大的挑战。交通流预测是智能交通系统中的一个战略性需求，旨在缓解交通压力、协调运营时间表和规划未来建设需要对交通流进行精准预测，从而为交通管理和规划提供有力的数据支持。
+
+\section{预测模型的介绍和分析} 
+
+本文采用的模型整体是一个时间序列预测框架\cite{teach2021}，特别是针对交通流量数据。该框架集成了多种预测模型，包括历史平均（HA）、线性回归（LR）、长短时记忆网络（LSTM）、门控循环单元（GRU）、图卷积神经网络（STGCN）、门控图波浪网络（GWN）以及自回归积分滑动平均模型（ARIMA）。
+
+用户可以通过命令行参数来选择使用哪一种模型、数据集以及训练和测试的相关设置。该框架也提供了数据预处理、模型训练、验证和测试的完整流程。实验结果包括预测的准确性，用MAE（平均绝对误差）和RMSE（均方根误差）作为评价指标。
+
+1. 多模型支持：集成了多种预测模型，从简单的历史平均到复杂的神经网络模型。
+
+2. 数据灵活性：支持不同源的数据集，并提供数据加载和预处理的功能。
+
+3. 优化性能：代码支持CUDA加速，能有效地提高计算速度。
+
+4. 模块化设计：各个组件（如数据加载、模型、训练和测试）都是模块化的，方便用户根据需要进行更改或拓展。
+
+1. 性能评估：使用MAE和RMSE作为评价指标，准确地反映模型的预测性能。
+
+2. 训练与验证：支持数据集的分割，并在训练过程中进行验证，以防止过拟合。
+
+3. 硬件兼容性：可以运行在CPU和CUDA-enabled GPU上，充分利用硬件资源。
+
+除了常见的LR（线性回归），即使用线性方程来拟合过去的数据并进行预测，适用于线性关系强烈的数据，但可能不适用于复杂和多变的数据。本项目还集成了多种预测模型，如下表所示：
+    
+\begin{table}[H]
+    \centering
+    \small % Reduce font size
+    \begin{tabularx}{\textwidth}{|X|X|X|}
+        \hline
+        \textbf{模型名称} & \textbf{介绍} & \textbf{特点分析} \\
+        \hline
+        HA（历史平均） & 简单地使用过去一段时间的数据的平均值作为未来的预测。 & 非常简单和快速，但可能不适用于复杂和非线性的时间序列。 \\
+        \hline
+        GRU（门控循环单元） & 是一种循环神经网络（RNN）的变体，用于序列数据的模型化。 & 比传统的 RNN 更高效，在处理长序列时也更稳定，但可能需要更多的数据进行训练。 \\
+        \hline
+        LSTM（长短时记忆） & 另一种 RNN 变体，特别设计用于解决长序列学习中的长期依赖问题。 & 非常适用于长序列和复杂模式的数据，但计算成本可能相对较高。 \\
+        \hline
+        STGCN（时空图卷积网络） & 一种用于时空数据（例如交通网络）的图卷积网络。 & 能够同时考虑时间和空间的依赖关系，但需要大量的计算资源。 \\
+        \hline
+        GWN（图波形网络） & 一种用于图结构数据的深度学习模型，特别是用于交通流量预测。 & 能够捕获复杂的时空依赖关系，但同样需要大量的计算资源。 \\
+        \hline
+        ARIMA（自回归积分滑动平均模型） & 一种统计模型，用于时间序列数据的预测。 & 适用于多种类型的时间序列数据，但可能需要专门的参数调整。 \\
+        \hline
+    \end{tabularx}
+    \caption{预测模型的介绍和特点分析}
+    \label{tab:model_analysis}
+    \normalsize % Reset to normal font size
+\end{table}
+
+\section{实验数据集介绍}
+
+
+\subsection{Metr-LA}
+
+这个数据集源自美国洛杉矶的传感器网络。数据通常包括交通速度、流量和其他可能的特征。广泛用于交通流量预测、异常检测等。本人在实验中选择的就是此数据集。
+
+\subsection{PeMSD4}
+
+这个数据集是从加利福尼亚州的 PeMS（Performance Measurement System）系统中获得的。通常包括不同地点、不同时间的交通流量数据。这个数据集主要用于交通流量预测，也可能用于交通管理系统的其他应用。
+
+\subsection{PeMSD8}
+
+与 PeMSD4 类似，这也是从 PeMS 系统中获得的数据。PeMSD8 通常涵盖更多的传感器和更长的时间范围。除了交通流量预测，这个数据集也可以用于研究交通模式、拥堵模式等。
+
+
+\section{评价指标介绍}
+
+\subsection{平均绝对误差（Mean Absolute Error, MAE）}
+
+MAE 是预测值与实际值之差的绝对值的平均。该指标容易理解和解释，单位与数据相同。
+
+\[
+\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} \left| y_{\text{true}, i} - y_{\text{pred}, i} \right|
+\]
+
+\subsection{均方根误差（Root Mean Square Error, RMSE）}
+
+要计算均方根误差 RMSE， 首先需要计算均方误差 MSE ，它是预测值与实际值之差的平方的平均。相对于 MAE，MSE 更重视较大的误差。
+
+\[
+\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} \left( y_{\text{true}, i} - y_{\text{pred}, i} \right)^2
+\]
+
+而 RMSE 是 MSE 的平方根，使得误差的单位与原数据相同。它给予较大误差更高的权重。
+
+\[
+\text{RMSE} = \sqrt{\text{MSE}}
+\]
+
+本实验采用的这两种指标是用于回归问题和时间序列预测中最常用和最广泛接受的指标。各有优缺点：
+
+MAE: 计算简单，直观，容易解释。它给出了模型预测与真实值之间的平均绝对偏差。但它不考虑预测错误的方向，只关心大小。
+
+RMSE: 同样是一个常用的指标，用于量化预测误差的平均大小。由于平方误差在大误差上会被放大，RMSE 对大误差更敏感。
+
+本实验将这两个指标一起使用，以提供关于模型性能的更全面视图。MAE 更关注于整体误差级别，而 RMSE 更侧重于大误差的影响。如果模型对所有情况的预测都很均匀，则 MAE 和 RMSE 通常会接近；如果模型对某些情况的预测有大的偏差，则 RMSE 通常会明显高于 MAE。
+
+\section{实验结果及分析}
+
+模型的原始参数如图1中代码所示：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/code.png}
+    \caption{初始参数设置（随机种子固定为42）}
+    \label{fig:your_label}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.423\textwidth}
+        \includegraphics[width=\textwidth]{figures/原始数据/HA_LR_predict.png}
+        \caption{HA\&LR}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/原始数据/STGCN_predict.png}
+        \caption{STGCN}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/原始数据/GWN_GRU_predict.png}
+        \caption{GWN\&GRU}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/原始数据/predict_results.png}
+        \caption{All}
+    \end{subfigure}
+    \caption{原始参数下各模型预测结果}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/code2.png}
+    \caption{修改参数}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/code3.png}
+    \caption{修改训练集比例}
+    \label{fig:your_label}
+\end{figure}
+
+%长表格
+\setlength{\LTleft}{2cm}  % 负值将表格向左移动，正值向右
+\large      % 调整字体大小
+% 只需要改上面这两个属性即可调整
+\begin{longtable}{ccccccc} % 使用的是longtable宏包
+\caption{三组实验结果} \\
+\toprule
+\textbf{Model} & \multicolumn{2}{c}{\textbf{原参数}} & \multicolumn{2}{c}{\textbf{修改参数}} & \multicolumn{2}{c}{\textbf{修改训练集比例}} \\
+\cmidrule(r){2-3} \cmidrule(r){4-5} \cmidrule(r){6-7}
+& mae & rmse & mae & rmse & mae & rmse \\
+\midrule
+\endfirsthead
+\multicolumn{7}{c}{(Continued)} \\
+\midrule
+\textbf{Model} & \multicolumn{2}{c}{\textbf{原参数}} & \multicolumn{2}{c}{\textbf{修改参数}} & \multicolumn{2}{c}{\textbf{修改训练集比例}} \\
+\cmidrule(r){2-3} \cmidrule(r){4-5} \cmidrule(r){6-7}
+& mae & rmse & mae & rmse & mae & rmse \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+HA & 0.0671632 & 0.152194 & 0.079333 & 0.110885 & 0.0835541 & 0.183408 \\
+LR & 0.0873125 & 0.145567 & 0.0581287 & 0.083345 & 0.0978 & 0.160149 \\
+ARIMA & 0.065112 & 0.137197 & 0.0900355 & 0.126894 & 0.0691302 & 0.147819 \\
+LSTM & 0.128212 & 0.194141 & 0.0497912 & 0.0746926 & 0.131516 & 0.215514 \\
+GRU & 0.128212 & 0.184357 & 0.0863847 & 0.115599 & 0.330563 & 0.291169 \\
+STGCN & 0.122236 & 0.166696 & 0.0615177 & 0.0867122 & 0.0977312 & 0.175435 \\
+GWN & 0.0788317 & 0.139134 & 0.0416136 & 0.0613628 & 0.0942108 & 0.159517 \\
+\end{longtable}
+
+
+针对METR-LA数据集，对不同的模型进行了评估。METR-LA是一个交通流量数据集，因此，选择的模型需要能够捕捉时间序列数据的动态性和模式。
+
+\begin{enumerate}
+  \item \textbf{默认参数实验}:
+    \begin{itemize}
+      \item 最佳MAE: GWN模型 (0.0788317)
+      \item 最佳RMSE: ARIMA模型 (0.137197)
+    \end{itemize}
+
+  \item \textbf{修改参数实验}:
+    \begin{itemize}
+      \item 最佳MAE: GWN模型 (0.0416136)
+      \item 最佳RMSE: GWN模型 (0.0613628)
+    \end{itemize}
+
+  \item \textbf{修改训练集比例实验}:
+    \begin{itemize}
+      \item 最佳MAE: ARIMA模型 (0.0691302)
+      \item 最佳RMSE: LR模型 (0.160149)
+    \end{itemize}
+\end{enumerate}
+
+\textbf{模型分析}:
+\begin{itemize}
+  \item \textbf{GWN模型}：GWN在交通流量预测中的表现出色，尤其在修改参数的情况下，其MAE和RMSE均为最低。这意味着当参数调整为较低的学习率和更多的迭代次数时，GWN能够更准确地预测METR-LA数据集的交通流量。
+
+  \item \textbf{ARIMA模型}：ARIMA作为经典的时间序列模型，其在默认参数和修改训练集比例的实验中都表现得很好，这表明ARIMA对于METR-LA这种交通数据集是非常有效的。
+
+  \item \textbf{GRU模型}：GRU在修改参数后的RMSE值显著增加，可能是过拟合的结果。这意味着对于METR-LA这种数据集，需要对GRU的参数进行更为谨慎的调整。
+
+  \item \textbf{LSTM模型}：相比于其他模型，LSTM的误差值在所有实验中都偏高，可能是该模型结构对于METR-LA数据集不是非常合适。
+
+\end{itemize}
+
+\section{结论与下一步工作（创新点）}
+
+\subsection{结论}
+
+在所有的实验中，GWN和ARIMA模型对于METR-LA数据集的预测表现最为出色。不过，选择最佳模型时还需要考虑其他的因素，例如模型的训练时间、复杂性和可解释性。
+
+\subsection{下一步工作（创新点）}
+
+尝试使用数学建模国赛中使用过的Prophet模型\cite{Prophet2017}进行预测测试，代码和模型原理详见附录，测试效果如下图所示：
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/clean_forecast_plot.png}
+    \caption{前100个数据点预测}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/forecast_plot_all.png}
+    \caption{预测效果总览}
+    \label{fig:your_label}
+\end{figure}
+
+本模型的特殊点在于可以考虑到指定节假日带来的影响。从原理来讲也许对于 METR-LA 这样的交通流数据集预测效果会较高，因为交通情况很容易受到季节性和特定日期的影响，可能的影响因素如下：
+
+1. 节假日：在许多城市，节假日的交通模式与工作日和周末非常不同。可能有更少的上下班交通，但更多的休闲出行，或者与节假日相关的特定事件导致的交通。
+
+2. 特定事件：除了常规的节假日，还有可能有其他的大型事件或活动会影响交通模式，例如体育赛事、音乐会或其他大型聚会。
+
+3. 季节性：除了上述的特定日期，还有季节性因素，如学校假期，可能在夏季或冬季影响交通模式。
+
+实验中考虑到的节假日如下图所示：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{figures/holiday_info.jpg}
+    \caption{考虑到的美国（LA）节假日}
+    \label{fig:your_label}
+\end{figure}
+
+
+下面来做模型验证，比较Prophet与其他模型的效果：
+
+\textbf{Prophet}:
+\begin{itemize}
+    \item RAE: 0.15058355
+    \item RMSE: 0.23718660
+\end{itemize}
+
+\textbf{其他模型最佳表现}:
+\begin{itemize}
+    \item \textbf{MAE (最低)}: GWN 在第二种设置下的 0.04161。
+    \item \textbf{RMSE (最低)}: GWN 在第二种设置下的 0.06136。
+\end{itemize}
+
+从上述数据中可以明显看出，Prophet的RAE和RMSE都相对较高，特别是与GWN在第二种设置下的表现相比。这说明Prophet的预测精度在这个特定的任务中不如其他一些模型。
+
+\textbf{为什么Prophet在METR-LA数据集上的效果不佳？}
+
+\begin{itemize}
+    \item \textbf{数据特性}: METR-LA数据集主要是关于洛杉矶都市区的交通速度数据。这种数据可能含有复杂的时空模式、非线性关系和依赖关系，而Prophet是设计用于处理具有强烈季节性和趋势性的时间序列数据的，例如节假日销售数据。如果METR-LA的数据没有明显的季节性或趋势性，Prophet可能不会表现得很好。
+    
+    \item \textbf{模型假设}: Prophet基于加法模型，其中考虑了趋势、季节性和节假日效应。而交通数据可能受到许多其他因素的影响，例如突发事件（如事故）、天气条件或道路工程，这些因素Prophet可能没有很好地捕捉。
+    
+    \item \textbf{模型复杂性}: 与深度学习模型（如LSTM、GRU）相比，Prophet是一个相对简单的模型。深度学习模型可以学习数据中的高级特征和复杂的时间依赖关系，而Prophet则主要依赖于其预定义的结构。
+    
+    \item \textbf{参数调整和优化}: 对于任何模型，正确的参数设置和调整都是关键。可能Prophet模型的参数没有被正确地调整以适应这个特定的数据集。
+\end{itemize}
+
+最后的结论是，选择最佳的模型需要考虑数据的特性和模型的特点。虽然Prophet在某些时间序列预测任务上非常有效，但对于某些特定的数据和任务（如交通流预测），其他模型可能会表现得更好。
+
+注：附录见下页
+\newpage
+%附录
+\appendix
+\section{Prophet算法预测}
+ \begin{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import datetime
+from prophet import Prophet
+
+# 创建并拟合模型
+df.columns = ['ts'] + df.columns[1:].tolist()
+df.head()
+
+df.columns = ['ts'] + df.columns[1:].tolist()
+df.head()
+
+model = Prophet(changepoint_prior_scale=10000) # 设置对异常值敏敢，因为原始数据中的0并非噪声
+
+# 添加美国的节假日
+model.add_country_holidays(country_name='US')
+
+model.fit(df)
+
+holidays = model.train_holiday_names
+print(holidays)
+
+future = model.make_future_dataframe(periods=10*24*12, freq='5T')  # 为5分钟间隔预测10天
+
+# 进行预测
+forecast = model.predict(future)
+forecast['ds'] = pd.to_datetime(forecast['ds'])
+df['ds'] = pd.to_datetime(df['ds'])
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(df['ds'], df['y'], 'k-', label='Actual')
+
+ax.plot(forecast['ds'], forecast['yhat'], color='blue', label='Predicted')
+
+# 设置X轴的范围为'2012-03-01 00:00:00'至'2012-03-11 23:55:00'
+start_date = datetime.datetime.strptime('2012-03-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+end_date = datetime.datetime.strptime('2012-03-11 23:55:00', '%Y-%m-%d %H:%M:%S')
+plt.xlim([start_date, end_date])
+
+plt.xticks(rotation=45)
+plt.legend()
+
+plt.tight_layout()
+plt.savefig("clean_forecast_plot.png")
+plt.show()
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+# 获取实际值和预测值
+actual = df[df['ds'].between(start_date, end_date)]['y'].values
+predicted = forecast[forecast['ds'].between(start_date, end_date)]['yhat'].values
+
+# 计算指标
+rae = mean_absolute_error(actual, predicted)
+rmse = np.sqrt(mean_squared_error(actual, predicted))
+
+print(f"RAE: {rae}")
+print(f"RMSE: {rmse}")
+\end{python}
+
+\section*{Prophet Model}
+
+Prophet Model\cite{Prophet2017}是一个加性模型，其中包括三个主要组件：趋势、季节性和节假日效应。假设我们的时间序列是\( y(t) \)，则Prophet模型可以表示为：
+
+\[ y(t) = \text{趋势} + \text{季节性} + \text{节假日} + \text{误差} \]
+
+\subsection*{1. 趋势}
+
+趋势部分可以进一步分为线性趋势和饱和增长趋势。
+
+\begin{itemize}
+    \item \textbf{线性趋势}:
+
+    \[ g(t) = k + m \cdot t \]
+
+    其中，\( k \) 和 \( m \) 是要估计的参数。
+
+    \item \textbf{饱和增长趋势}:
+
+    这是一个逻辑增长模型，描述了增长会随着时间饱和的现象：
+
+    \[ g(t) = \frac{c}{1 + e^{-k(t - m)}} \]
+
+    其中，\( c \) 是饱和的最大值，\( k \) 是增长率，\( m \) 是偏移量。
+\end{itemize}
+
+\subsection*{2. 季节性}
+
+Prophet模型使用傅里叶级数来建模年度和周季节性。对于年度季节性，公式如下：
+
+\[ s(t) = \sum_{n=1}^{N} \left( a_n \cos\left(\frac{2\pi nt}{365.25}\right) + b_n \sin\left(\frac{2\pi nt}{365.25}\right) \right) \]
+
+其中，\( a_n \) 和 \( b_n \) 是傅里叶级数的系数，需要从数据中估计。
+
+\subsection*{3. 节假日效应}
+
+如果我们有一个包含节假日日期的集合，Prophet可以自动考虑这些节假日的影响。其效应可以表示为：
+
+\[ h(t) = \sum_{i=1}^{K} k_i \cdot \mathbb{I}(t = \text{holiday}_i) \]
+
+其中，\( k_i \) 是节假日效应的大小，需要从数据中估计，而 \( \mathbb{I} \) 是指示函数。
+
+\bibliography{references}     % 'references' corresponds to the filename `references.bib`.
+
+\end{document}
