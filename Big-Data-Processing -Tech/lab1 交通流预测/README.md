@@ -11,7 +11,7 @@ show_all_results.py 同样为修改过的，非代码的最终版本，同上。
 run_all.sh 为一键运行脚本，具体参数见脚本内注释，示例：
 
 ```shell
-run_all.sh METR_L
+run_all.sh METR_LA
 ```
 
 报告模板仅供参考，于[Overleaf](www.overleaf.com)编译，严禁抄袭，后果自负。
