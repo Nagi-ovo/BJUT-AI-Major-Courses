@@ -185,10 +185,9 @@ int isTmax(int x) {
 int allOddBits(int x) {
  /* 1101 = 0 , 1010 = 1 , 1010,1011,1110,1111
                             A  . B .  E .  F */
-  int A = 0xA;
-  int AA = A | (A << 4); // 0xAA
-  int AAAA = AA | (AA << 8); // 0xAAAA
-  int mask = AAAA | (AAAA << 16); // 0xAAAAAAAA
+  int A2 = 0xAA;
+  int A4 = A2 | (A2 << 8); // 0xAA
+  int mask = A4 | (A4 << 16); // 0xAAAA
 // Use 1010 as a mask 
   return !((x & mask) ^ mask) ;
 }
