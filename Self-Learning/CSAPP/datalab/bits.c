@@ -228,3 +228,21 @@ int isAsciiDigit(int x) {
   int cond3 = ((x + (~0x39)) >> 31);  // (~0x3A) + 1 = ~0x39
   return cond1 & cond2 & cond3 ;
 }
+
+int conditional(int x, int y, int z) {
+  /* 
+  // My Solution 1 : 10 operators
+  int sign = (x | (~x + 1)) >> 31;   
+  int F8 = 1 << 31 >> 31; // int F2 = 0xFF;int F4 = F2 | (F2 << 8);int F8 = F4 | (F4 << 16);
+  int mask = F8 ^ sign ;
+  return (y & sign) | (z & mask);
+  
+  // My Solution 2 : 8 operators
+  int mask = (x | (~x + 1)) >> 31;   
+  return (y & mask) | (z & ~mask);
+  */
+
+  // A Better Solution : 8 operators
+  int mask = (!!x) << 31 >> 31;
+  return (y & mask) | (z & ~mask);
+}
