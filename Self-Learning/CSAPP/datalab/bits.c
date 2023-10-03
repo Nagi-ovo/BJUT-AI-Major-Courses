@@ -186,8 +186,8 @@ int allOddBits(int x) {
  /* 1101 = 0 , 1010 = 1 , 1010,1011,1110,1111
                             A  . B .  E .  F */
   int A2 = 0xAA;
-  int A4 = A2 | (A2 << 8); // 0xAA
-  int mask = A4 | (A4 << 16); // 0xAAAA
+  int A4 = A2 | (A2 << 8); // 0xAAAA
+  int mask = A4 | (A4 << 16); // 0xAAAAAAAA
 // Use 1010 as a mask 
   return !((x & mask) ^ mask) ;
 }
