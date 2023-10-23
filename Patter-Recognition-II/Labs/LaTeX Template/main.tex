@@ -1,0 +1,264 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumerate}
+\usepackage[fontset=ubuntu]{ctex}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+\usepackage{pythonhighlight}
+\usepackage{natbib}
+\usepackage{minted,color}
+\setminted{
+  framesep=2mm,
+  bgcolor=bg,
+  linenos
+}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\usemintedstyle{tango}
+
+\bibliographystyle{unsrt}
+\geometry{a4paper,scale=0.9}
+
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    \Huge
+    \textbf{实验是个好东西}
+        
+    \vspace{2cm}
+        
+    \Large
+    姓名:  \\ \vspace{0.5cm}
+    学号: \\ \vspace{0.5cm}
+    专业: 人工智能\\ \vspace{0.5cm}
+    指导老师: \\
+
+    
+    \vfill
+    \normalsize
+    
+    \begin{center}
+    \hspace*{-1.1cm}
+    \begin{tabular}{|p{8cm}|p{8cm}|}
+    \hline
+    \multicolumn{2}{|c|}{{\large \textbf{报告分：(100 points)}}} \\
+    \hline
+    \textbf{Attendance (5 points)} & \textbf{Results (10 points)} \\
+    \hline
+    1.实验课时签到成功 (5) & 1.给出算法正确和可运行程序 (10) \\
+    2.实验课时没有签到成功 (0) & 2.程序算法原理有部分理解错误 (5) \\
+    & 3.程序算法原理和程序都有完全错误 (0) \\
+    \hline
+    \textbf{Content of Report (55 points)} & \textbf{Format in Report (30 points)} \\
+    \hline
+    1.要求点全部高质量完成(55) & 1.图表、引用等符合学术规范 (15)、语言清晰，逻辑明确和表述清晰完整(15) \\
+    2.要求点完成但有错误(给分点减半) & 2.图表、引用不符合学术规范(0) \\
+    3.要求点没有完成(扣相应给分点的分) & 3.语言清晰，逻辑明确和表述清晰完整(0) \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    最终本次实验得分成绩= 报告分 *（时间或算法）性能排序因子 \\
+    \hline
+    （时间或算法）性能排序因子为： \\
+    · top1 - 3，100 \\
+    · Top4 - 10，95 \\
+    · Top11 - 15，90 \\
+    · Top16 - 最后，80 \\
+    性能可以并列第一。 \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+
+\end{titlepage}
+
+\vspace{-10cm}
+
+\section{问题描述}
+实验要求使用朴素贝叶斯分类器来对MNIST数据集进行分类。MNIST数据集是手写数字的数据集，其中每个样本都是一个28x28像素的图像，对应0到9的数字标签。
+
+\section{问题的本质和分析}
+朴素贝叶斯方法对手写数字图像进行分类，朴素贝叶斯分类器天真地假设所有特征（这里是像素）之间是条件独立的。
+
+\section{解决问题的思路和结果预测}
+首先进行数据的预处理，将像素值二值化，使其变为0或1。然后我们使用训练集来计算先验概率和特征的条件概率。最后，我们使用这些概率来预测测试集的类标签。
+
+\begin{figure}[H]
+    \centering
+    \hspace*{-1.4cm}
+    \includegraphics[width=0.5\textwidth]{figures/0.png}
+    \caption{简单了解数据}
+    \label{fig:your_label}
+\end{figure}
+
+考虑到MNIST数据集的复杂性，不难猜到这种简单的方法可能不会达到最先进的结果，但应该可以获得令人接受的准确率。
+
+\section{解决问题中遇到的难点}
+1. 数据量大，需要高效的计算方法。
+
+2. 二值化可能丢失一些图像的重要信息。
+
+3. 对于图像数据，特征间的条件独立假设可能不太合理。
+
+4. 单纯的朴素贝叶斯肯定有不够高的上限。
+
+\section{关键代码的实现与解释}
+
+\subsection{先验概率的计算}
+
+公式：
+\[ P(y) \]
+
+\begin{minted}{python}
+self.class_log_prior_ = np.log(np.bincount(y) / len(y))
+\end{minted}
+计算每个类$y$的先验概率，并将结果保存为对数值。`np.bincount(y)`计算每个类在数据集中出现的次数，然后除以总样本数得到每个类的先验概率。
+
+\subsection{计算特征的条件概率}
+
+
+\subsection{预测}
+
+
+
+选择具有最高后验概率的类作为预测标签。
+
+\section{结果分析与改进}
+
+\subsection{分析}
+使用贝叶斯分类器。
+
+\subsection{改进的动机}
+
+使用贝叶斯分类器对MNIST数据集进行分类时，准确率只达到了约82.89\%。
+
+\subsection{依据}
+\begin{enumerate}
+    \item \textbf{xxx}：
+    
+    \item \textbf{xxxx}：
+\end{enumerate}
+
+\subsection{算法设计}
+结合先前的朴素贝叶斯模型以得到更好的预测结果。
+
+\subsection{预期结果}
+加上原先的方法肯定能够得到更高的正确率。
+
+\section{改进的代码和结果分析}
+\subsection{代码及运行结果}
+
+完整代码详见附件：
+
+\begin{minted}{python}
+# 可视化降维后的数据
+visualize_tsne(transformed_data, targets)
+\end{minted}
+
+运行结果见 [图1] ，从图中可以得到如下信息：
+
+\begin{enumerate}
+    \item \textbf{类别聚集}：不同颜色。
+    
+    \item \textbf{区分明确}：展示了手写数字降维后提取出了独特性。
+    
+    \item \textbf{部分重叠}：簇的部分边缘存在重叠。
+\end{enumerate}
+
+
+\subsection{结论}
+
+多参数（如困惑度）的影响，所以可视化的结果并不总是与分类器的实际性能一致。
+
+如果想得到预测正确率，还需要加上前面定义的朴素贝叶斯来进行模型的训练和验证。
+
+\begin{enumerate}
+    \item \textbf{数据预处理}：首先，
+
+    \item \textbf{模型训练}：使用朴素贝叶斯分类器对数据进行分类。
+
+    \item \textbf{结果对比}：与原始数据上的 83\% 准确率相比，降维后的数据使得准确率显著提升至 96.1\%。
+\end{enumerate}
+
+结论：我成功地提高了 MNIST 手写数字分类的准确性，验证了这种策略的高效性。
+
+\bibliography{references}     % 'references' corresponds to the filename `references.bib`.
+
+\clearpage  % 使用 \clearpage 确保所有浮动内容（例如图表）都被处理了
+
+\vspace*{\fill}
+\begin{center}
+    \textbf{注：附录见下页}
+\end{center}
+\vspace*{\fill}
+
+\clearpage  % 再次使用 \clearpage 以确保注释部分与附录分离
+
+\newpage
+%附录
+\appendix
+
+\section*{完整代码：lab.ipynb}
+\begin{minted}{python}
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn import datasets
+from sklearn import manifold
+from sklearn.metrics import accuracy_score
+
+# 获取数据
+data = datasets.fetch_openml('mnist_784', version=1, return_X_y=True)
+pixel_values, targets = data
+targets = targets.astype(int)
+pixel_array = pixel_values.to_numpy()
+single_image = pixel_array[1, :].reshape(28, 28)
+
+# 展示图像
+plt.imshow(single_image, cmap='gray')
+plt.show()
+\end{minted}
+
+\begin{figure}[H]
+    \centering
+    \hspace*{-1.4cm}
+    \includegraphics[width=0.5\textwidth]{figures/0.png}
+    \caption{简单了解数据}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{minted}{python}
+# 使用自己定义的朴素贝叶斯训练模型
+clf = GaussianNaiveBayes()
+clf.fit(X_train, y_train)
+
+# 在测试集上进行预测
+y_pred = clf.predict(X_test)
+
+# 计算准确率
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy*100:.2f}%")
+\end{minted}
+
+最终结果：
+
+Accuracy: 96.10\%
+\end{document}
