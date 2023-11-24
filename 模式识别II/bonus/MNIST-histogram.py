@@ -13,15 +13,25 @@ def load_data():
 pixel_values, _ = load_data()
 pixel_array = pixel_values.to_numpy()
 
-# Cache calculation results
+# Cache calculation results and print specific coordinates
 @st.cache_data
 def calculate_histograms(pixel_array):
     histograms = np.zeros((28, 28, 256))
-    for image in pixel_array:
+    with open('coordinates.txt', 'w') as file:
+        for image in pixel_array:
+            for i in range(28):
+                for j in range(28):
+                    pixel_value = image[i * 28 + j]
+                    histograms[i, j, int(pixel_value)] += 1
+
+        # Find coordinates where 95% of grayscale is concentrated in 0-42 and write to file
         for i in range(28):
             for j in range(28):
-                pixel_value = image[i * 28 + j]
-                histograms[i, j, int(pixel_value)] += 1
+                total_pixels = np.sum(histograms[i, j, :])
+                cumulative_frequency_0_42 = np.sum(histograms[i, j, :30])
+                if cumulative_frequency_0_42 / total_pixels >= 0.99:
+                    file.write(f"{i},{j}\n")
+
     return histograms
 
 # Calculate and cache the histogram
