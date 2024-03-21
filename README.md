@@ -9,4 +9,4 @@ Beijing University of Technology has introduced a new major: Artificial Intellig
 
 Current status: First semester of the junior year.
 
-总结：老师基本都很好，能力基本都很强，但是教学成果如何呢？让我们拭目以待！
+
